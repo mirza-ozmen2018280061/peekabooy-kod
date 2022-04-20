@@ -1,0 +1,180 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityStandardAssets.CrossPlatformInput;
+
+public class charactercontrol : MonoBehaviour
+{
+
+    // yetnektyönleri
+    public int speed;
+    public static bool okYonu = true;
+    public static bool menzil;
+    public static bool sapanyon;
+   //public AudioClip[] selamın;
+    
+
+
+    //  public static bool satis;
+    public static int n = 0;
+    public static int can;
+    public static int cankontol;
+    public int jumpspeed;
+    public int damage;
+    /* public Text üzüm;
+     int para ;
+     int parakontrol = 0;
+     int parakontrolIki = 0 ;*/
+
+    Animator animator;
+    Rigidbody2D rb;
+    bool canjump = true;
+    bool faceright = true;
+    bool attackanim = true;
+    bool canAlma = false;
+    bool papagansaldirisi = false;
+    bool canalmakontrol = false;
+    public Vector3 offset;
+    Vector2 foward;
+    RaycastHit2D hit;
+
+    ///////////////////////////////////// buton yetenek aktfilerstirme
+    bool okyagmuru = false;
+    bool saldır = false;
+    bool sapanaktif = false;
+    //////////////////////
+
+    public GameObject oksag;
+    public GameObject oksol;
+    public GameObject yetenekok;
+    public GameObject yetenekoksol;
+    public GameObject sagkus;
+    public GameObject solkus;
+    public GameObject sagsapann;
+    public GameObject solsapann;
+    Vector2 wheretospawn;
+    Vector2 wherestospawnSapan;
+    float saldırıbaslama;
+    float basılıtutma;
+    float atıshizi;
+    float sayaç = 1.0f;
+    bool skill = true;
+    int i = 0;
+    AudioSource[] sesler;
+    
+
+    public Transform kirpi;
+
+    void Start()
+    {
+        sapanyon = faceright;
+        //satis = false;
+        rb = GetComponent<Rigidbody2D>();
+        sesler = GetComponents<AudioSource>();
+        animator = GetComponent<Animator>();
+        
+
+        okYonu = faceright;
+        wheretospawn = new Vector2(transform.position.x + 1.0f, transform.position.y - 20.30f);
+       GameObject ok = Instantiate(oksag, wheretospawn, Quaternion.identity);
+        ok.GetComponent<Rigidbody2D>().velocity = new Vector2(10.0f, 0.0f);
+        animator.SetBool("devam", true);
+        menzil = false;
+
+
+
+        /* parakontrolIki = 0;
+        parakontrol = PlayerPrefs.GetInt("parakontrol");
+        if (parakontrol == 1)
+        {
+            para = PlayerPrefs.GetInt("para");
+            parakontrolIki = 1;
+        }
+        if (parakontrolIki == 0)
+        {
+            para = 10;
+        }
+        üzüm.text = "=  " + para;*/
+    }
+
+    // Update is called once per frame
+    public void Update()
+    {
+
+        /*  cankontol = characterStats.cankontol;
+          if (cankontol < 1)
+          {
+              PlayerPrefs.DeleteKey("para");
+              PlayerPrefs.DeleteKey("parakontrol");
+          }
+  */
+        sapanyon = faceright;
+        okYonu = faceright;
+        if (faceright == true)
+        {
+            wheretospawn = new Vector2(transform.position.x + 1.0f, transform.position.y - 0.30f);
+            wherestospawnSapan = new Vector2(transform.position.x + 1.0f, transform.position.y+1.0f);
+        }
+        else
+        {
+            wheretospawn = new Vector2(transform.position.x - 1.0f, transform.position.y - 0.30f);
+            wherestospawnSapan = new Vector2(transform.position.x - 1.0f, transform.position.y+1.0f);
+        }
+        if (CrossPlatformInputManager.GetButtonDown("Jump"))
+        {
+            /// zıplama
+            jump();
+
+        }
+        if (papagansaldirisi)
+        {
+            papagansaldirisi = false;
+            if (faceright)
+            {
+                GameObject papagan = Instantiate(sagkus, wheretospawn, Quaternion.identity);
+                papagan.GetComponent<Rigidbody2D>().velocity = new Vector2(10.0f, 0.0f);
+            }
+            else
+            {
+                GameObject papagan = Instantiate(solkus, wheretospawn, Quaternion.identity);
+                papagan.GetComponent<Rigidbody2D>().velocity = new Vector2(-10.0f, 0.0f);
+            }
+
+        }
+        if (okyagmuru == true && skill)
+        {
+            okyagmuru = false;
+
+            if (faceright)
+            {
+
+
+
+                StartCoroutine(delay());
+
+
+
+            }
+            else
+            {
+                StartCoroutine(delay());
+            }
+            StartCoroutine(skilldelay());
+
+        }
+        if (sapanaktif)
+        {
+            sapanaktif = false;
+            if (faceright)
+            {
+                GameObject sahSapan = Instantiate(sagsapann, wherestospawnSapan, Quaternion.identity);
+            }
+            else
+            {
+                GameObject solSapan = Instantiate(solsapann, wherestospawnSapan, Quaternion.identity);
+            }
+
+        }
+        
+        // kod ub şekildedevam etme ilk amatör işimdir oyundaki çizimler ses efektleri vs bana aittir muzik asset storedan eklenmiştir birtek 
